@@ -6,11 +6,22 @@ camera.width = 480
 camera.height = 320
 
 let greenScreenCheckbox = document.getElementById('green-screen')
+let mirrorCheckbox = document.getElementById('mirror')
+mirrorCheckbox.onchange = () => {
+    if (mirrorCheckbox.checked)
+        canvas.style.transform = 'rotateY(180deg)'
+    else
+        canvas.style.transform = ''
+}
 
 let colorPicker = document.getElementById('color')
 let colorArr = hexToRgb(colorPicker.value)
+let blurBackground = document.getElementById('blur')
 colorPicker.onclick = (event) => {
     event.preventDefault()
+    let hasMirrored = mirrorCheckbox.checked
+    canvas.style.transform = ''
+    blurBackground.style.display = 'block'
     colorPicker.dataset.active = 'true'
     canvas.style.cursor = 'crosshair'
     window.onclick = (event) => {
@@ -23,7 +34,7 @@ colorPicker.onclick = (event) => {
             colorPicker.value = hex
             colorArr = hexToRgb(colorPicker.value)
             function getElementPosition(obj) {
-                var curleft = 0, curtop = 0;
+                let curleft = 0, curtop = 0;
                 if (obj.offsetParent) {
                     do {
                         curleft += obj.offsetLeft;
@@ -35,7 +46,7 @@ colorPicker.onclick = (event) => {
             }
 
             function getEventLocation(element, event) {
-                var pos = getElementPosition(element);
+                let pos = getElementPosition(element);
 
                 return {
                     x: (event.pageX - pos.x),
@@ -45,6 +56,9 @@ colorPicker.onclick = (event) => {
         }
 
         if (event.target !== colorPicker) {
+            if (hasMirrored)
+                canvas.style.transform = 'rotateY(180deg)'
+            blurBackground.style.display = 'none'
             colorPicker.dataset.active = 'false'
             canvas.style.cursor = ''
         }
@@ -68,30 +82,29 @@ let backgroundInput = document.getElementById('upload-background')
 backgroundInput.onchange = () => {
     if (!backgroundInput.value) return
     let file = backgroundInput.files[0]
-    let reader = new FileReader()
-    reader.onload = () => {
-        console.log(file.type);
-        if (file.type.split('/')[0] === 'image') {
+    console.log(file.type);
+    if (file.type.split('/')[0] === 'image') {
+        let reader = new FileReader()
+        reader.onload = () => {
             let image = new Image()
             image.src = reader.result
             addBackground(image)
         }
-        else if (file.type.split('/')[0] === 'video') {
-            background.type = 'video'
-            let reader = new FileReader()
-            reader.onload = () => {
-                let buffer = reader.result;
-                let videoBlob = new Blob([new Uint8Array(buffer)], { type: 'video/mp4' });
-                let url = window.URL.createObjectURL(videoBlob);
-                let video = document.createElement('video')
-                video.src = url
-                addBackground(video)
-            }
-            reader.readAsArrayBuffer(file)
-        }
-
+        reader.readAsDataURL(file)
     }
-    reader.readAsDataURL(file)
+    else if (file.type.split('/')[0] === 'video') {
+        let reader = new FileReader()
+        reader.onload = () => {
+            let buffer = reader.result;
+            let videoBlob = new Blob([new Uint8Array(buffer)], { type: 'video/mp4' });
+            let url = window.URL.createObjectURL(videoBlob);
+            let video = document.createElement('video')
+            video.src = url
+            addBackground(video)
+        }
+        reader.readAsArrayBuffer(file)
+    }
+    backgroundInput.value = ''
 }
 
 let backgroundList = []
@@ -119,7 +132,8 @@ function changeBackground(backgroundNumber) {
 }
 function deleteBackground(backgroundNumber) {
     backgroundList.splice(backgroundNumber, 1)
-    updateBackgrounds()
+    if (currentBackgroundNumber == backgroundList.length) changeBackground(backgroundList.length - 1)
+    else updateBackgrounds()
 }
 function updateBackgrounds() {
     backgroundListElement.innerHTML = ''

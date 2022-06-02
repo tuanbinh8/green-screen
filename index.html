@@ -7,8 +7,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        #canvas {
+        #blur {
+            display: none;
             position: absolute;
+            left: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: black;
+            opacity: 0.5;
+        }
+
+        #canvas {
+            z-index: 999;
+            position: absolute;
+            /* transform: rotateY(180deg); */
         }
 
         #background-list {
@@ -17,6 +30,10 @@
             padding: 0;
             list-style: none;
             display: flex;
+        }
+
+        #background-list li {
+            position: relative;
         }
 
         #background-list .bg {
@@ -34,7 +51,8 @@
         #background-list .fa-circle-xmark {
             cursor: pointer;
             display: none;
-            float: right;
+            position: absolute;
+            right: 0;
             z-index: 9999;
         }
 
@@ -63,6 +81,8 @@
     <div>
         <input type="checkbox" name="" id="green-screen" disabled>
         <label for="green-screen">Green screen</label>
+        <input type="checkbox" name="" id="mirror">
+        <label for="mirror">Mirror my camera</label>
     </div>
     <div>
         <input type="color" name="" id="color" data-active="false" value="#00b140">
@@ -74,6 +94,7 @@
     <div>
         <ul id="background-list"></ul>
     </div>
+    <div id="blur"></div>
 </body>
 <script src="processor.js"></script>
 <script src="camera.js"></script>
