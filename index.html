@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #canvas {
+            position: absolute;
+        }
+
+        #background-list {
+            margin: 0;
+            margin-top: 5px;
+            padding: 0;
+            list-style: none;
+            display: flex;
+        }
+
+        #background-list .bg {
+            margin-left: 5px;
+            width: 120px;
+            height: 80px;
+            border-radius: 12px;
+            object-fit: fill;
+        }
+
+        #background-list .bg:hover {
+            outline: 2px grey solid;
+        }
+
+        #background-list .fa-circle-xmark {
+            cursor: pointer;
+            display: none;
+            float: right;
+            z-index: 9999;
+        }
+
+        #background-list li:hover .fa-circle-xmark {
+            display: block;
+        }
+
+        #background-list .fa-circle-xmark:hover {
+            color: red;
+        }
+
+        #background-list .bg.active {
+            outline: 2px solid blue;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+        integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <div>
+        <canvas id="canvas"></canvas>
+        <canvas id="background"></canvas>
+    </div>
+    <div>
+        <input type="checkbox" name="" id="green-screen" disabled>
+        <label for="green-screen">Green screen</label>
+    </div>
+    <div>
+        <input type="color" name="" id="color" data-active="false" value="#00b140">
+    </div>
+    <div>
+        <label for="background">Upload background:</label>
+        <input type="file" accept="image/*,video/*" id="upload-background">
+    </div>
+    <div>
+        <ul id="background-list"></ul>
+    </div>
+</body>
+<script src="processor.js"></script>
+<script src="camera.js"></script>
+
+</html>
