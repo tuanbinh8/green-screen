@@ -18,11 +18,32 @@
             opacity: 0.5;
         }
 
+        #canvas-container {
+            width: fit-content;
+            position: relative;
+        }
+
         #canvas {
             z-index: 999;
             position: absolute;
             /* transform: rotateY(180deg); */
         }
+
+        /* #canvas-container .fa-rotate-left {
+            cursor: pointer;
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            z-index: 9999;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        
+        #canvas-container .fa-rotate-left:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        } */
 
         #background-list {
             margin: 0;
@@ -33,11 +54,17 @@
         }
 
         #background-list li {
+            margin-left: 5px;
             position: relative;
         }
 
+        #background-list li#transparent {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
         #background-list .bg {
-            margin-left: 5px;
             width: 120px;
             height: 80px;
             border-radius: 12px;
@@ -74,12 +101,13 @@
 </head>
 
 <body>
-    <div>
+    <div id="canvas-container">
         <canvas id="canvas"></canvas>
         <canvas id="background"></canvas>
+        <!-- <i class="fa-solid fa-rotate-left" id="rotate"></i> -->
     </div>
     <div>
-        <input type="checkbox" name="" id="green-screen" disabled>
+        <input type="checkbox" name="" id="green-screen">
         <label for="green-screen">Green screen</label>
         <input type="checkbox" name="" id="mirror">
         <label for="mirror">Mirror my camera</label>

@@ -107,6 +107,19 @@ backgroundInput.onchange = () => {
     backgroundInput.value = ''
 }
 
+// let rotateButton = document.getElementById('rotate')
+// rotateButton.onclick = () => {
+//     let canvasRotatedDegree = getRotatedDegree(canvas)
+//     canvas.style.transform = `rotate(${canvasRotatedDegree - 90}deg)`
+//     backgroundCanvas.style.transform = `rotate(${canvasRotatedDegree - 90}deg)`
+//     function getRotatedDegree(element) {
+//         let transform = element.style.transform || false
+//         if (transform)
+//             return Number(transform.slice(7).split('deg')[0])
+//         return 0
+//     }
+// }
+
 let backgroundList = []
 let backgroundListElement = document.getElementById('background-list')
 let currentBackgroundNumber
@@ -149,10 +162,6 @@ function updateBackgrounds() {
     }
     if (backgrounds[currentBackgroundNumber])
         backgrounds[currentBackgroundNumber].classList.add('active')
-    if (backgroundList.length == 0) {
-        greenScreenCheckbox.checked = false
-        greenScreenCheckbox.disabled = true
-    } else greenScreenCheckbox.disabled = false
 }
 
 let processor = {
@@ -195,8 +204,6 @@ let processor = {
                 let r = frame.data[i * 4 + 0];
                 let g = frame.data[i * 4 + 1];
                 let b = frame.data[i * 4 + 2];
-                // console.log('colorArr:' + colorArr);
-                // console.log('rgb' + [r, g, b]);
                 if (Math.abs(g - colorArr[1]) < 50 && Math.abs(r - colorArr[0]) < 50 && Math.abs(b - colorArr[2]) < 50)
                     frame.data[i * 4 + 3] = 0;
             }
