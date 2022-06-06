@@ -6,98 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <style>
-        #blur {
-            display: none;
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: black;
-            opacity: 0.5;
-        }
-
-        #canvas-container {
-            width: fit-content;
-            position: relative;
-        }
-
-        #canvas {
-            z-index: 999;
-            position: absolute;
-            /* transform: rotateY(180deg); */
-        }
-
-        /* #canvas-container .fa-rotate-left {
-            cursor: pointer;
-            position: absolute;
-            right: 10px;
-            top: 10px;
-            z-index: 9999;
-            background-color: rgba(0, 0, 0, 0.5);
-            color: white;
-            padding: 5px;
-            border-radius: 5px;
-        }
-        
-        #canvas-container .fa-rotate-left:hover {
-            background-color: rgba(0, 0, 0, 0.7);
-        } */
-
-        #background-list {
-            margin: 0;
-            margin-top: 5px;
-            padding: 0;
-            list-style: none;
-            display: flex;
-        }
-
-        #background-list li {
-            margin-left: 5px;
-            position: relative;
-        }
-
-        #background-list li#transparent {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #background-list .bg {
-            width: 120px;
-            height: 80px;
-            border-radius: 12px;
-            object-fit: fill;
-        }
-
-        #background-list .bg:hover {
-            outline: 2px grey solid;
-        }
-
-        #background-list .fa-circle-xmark {
-            cursor: pointer;
-            display: none;
-            position: absolute;
-            right: 0;
-            z-index: 9999;
-        }
-
-        #background-list li:hover .fa-circle-xmark {
-            display: block;
-        }
-
-        #background-list .fa-circle-xmark:hover {
-            color: red;
-        }
-
-        #background-list .bg.active {
-            outline: 2px solid blue;
-        }
-    </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
         integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -113,6 +25,10 @@
         <label for="mirror">Mirror my camera</label>
     </div>
     <div>
+        <button id="capture">Capture photo</button>
+        <button id="record">Record video</button>
+    </div>
+    <div>
         <input type="color" name="" id="color" data-active="false" value="#00b140">
     </div>
     <div>
@@ -121,6 +37,14 @@
     </div>
     <div>
         <ul id="background-list"></ul>
+    </div>
+    <div id="images-container">
+        <p>Images:</p>
+        <ul id="images-list" class="media-list"></ul>
+    </div>
+    <div id="videos-container">
+        <p>Videos:</p>
+        <ul id="videos-list" class="media-list"></ul>
     </div>
     <div id="blur"></div>
 </body>

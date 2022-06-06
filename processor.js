@@ -212,3 +212,33 @@ let processor = {
         return;
     }
 };
+
+let imagesContainer = document.getElementById('images-container')
+let captureButton = document.getElementById('capture')
+let imagesList = []
+let imagesListElement = document.getElementById('images-list')
+
+captureButton.onclick = () => {
+    addImage(canvas.toDataURL())
+}
+
+function addImage(url) {
+    imagesList.push(url)
+    updateImages()
+}
+function deleteImage(imageNumber) {
+    imagesList.splice(imageNumber, 1)
+    updateImages()
+}
+function updateImages() {
+    imagesListElement.innerHTML = ''
+    imagesContainer.style.display = imagesList.length ? 'block' : 'none'
+    imagesList.map((url, index) => {
+        imagesListElement.innerHTML += `<li><i onclick='deleteImage(${index})' class="fa-solid fa-circle-xmark"></i><img src='${url}'></li>`
+    })
+}
+
+let videosContainer = document.getElementById('videos-container')
+let recordButton = document.getElementById('record')
+let videosList = []
+let videosListElement = document.getElementById('videos-list')
