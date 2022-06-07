@@ -3,14 +3,6 @@ let camera = document.createElement('video')
 camera.width = 480
 camera.height = 320
 
-
-let capture = new CCapture({
-    format: 'webm',
-    framerate: 25,
-});
-let recording = false
-
-
 let greenScreenCheckbox = document.getElementById('green-screen')
 let mirrorCheckbox = document.getElementById('mirror')
 mirrorCheckbox.onchange = () => {
@@ -183,8 +175,6 @@ let processor = {
             }
         }
         this.ctx.putImageData(frame, 0, 0);
-        if (recording)
-            capture.capture(canvas);
         return;
     }
 };
@@ -220,18 +210,40 @@ let videosContainer = document.getElementById('videos-container')
 let recordButton = document.getElementById('record')
 let videosList = []
 let videosListElement = document.getElementById('videos-list')
+let recording = false
 
+let recorder
+let canvasStream
+let audioStream
 recordButton.onclick = () => {
     recording = !recording
     if (recording) {
         recordButton.innerText = 'Stop'
-        capture.start();
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(function (_audioStream) {
+            audioStream = _audioStream
+            canvasStream = canvas.captureStream();
+
+            let finalStream = new MediaStream();
+            getTracks(audioStream, 'audio').forEach(function (track) {
+                finalStream.addTrack(track);
+            });
+            getTracks(canvasStream, 'video').forEach(function (track) {
+                finalStream.addTrack(track);
+            });
+
+            recorder = RecordRTC(finalStream, {
+                type: 'video'
+            });
+            recorder.startRecording();
+        });
     } else {
         recordButton.innerText = 'Record video'
-        capture.stop();
-        capture.save(blob => {
+        recorder.stopRecording(function () {
+            let blob = recorder.getBlob();
             let url = URL.createObjectURL(blob)
             addVideo(url)
+            audioStream.stop();
+            canvasStream.stop();
         });
     }
 }
@@ -245,11 +257,11 @@ function updateVideos() {
     videosListElement.innerHTML = ''
     videosContainer.style.display = videosList.length ? 'block' : 'none'
     videosList.map((url, index) => {
-        videosListElement.innerHTML += `<li><i onclick='deleteImage(${index})' class="fa-solid fa-circle-xmark"></i><video src='${url}' controls></video></li>`
+        videosListElement.innerHTML += `<li><i onclick='deleteVideo(${index})' class="fa-solid fa-circle-xmark"></i><video src='${url}' controls></video></li>`
     })
 }
 
-function deleteImage(videoNumber) {
+function deleteVideo(videoNumber) {
     videosList.splice(videoNumber, 1)
-    updateImages()
+    updateVideos()
 }
