@@ -1,9 +1,15 @@
 let canvas = document.getElementById('canvas')
-let backgroundCanvas = document.getElementById('background')
-let backgroundCanvasCtx = backgroundCanvas.getContext('2d')
 let camera = document.createElement('video')
 camera.width = 480
 camera.height = 320
+
+
+let capture = new CCapture({
+    format: 'webm',
+    framerate: 25,
+});
+let recording = false
+
 
 let greenScreenCheckbox = document.getElementById('green-screen')
 let mirrorCheckbox = document.getElementById('mirror')
@@ -82,28 +88,11 @@ let backgroundInput = document.getElementById('upload-background')
 backgroundInput.onchange = () => {
     if (!backgroundInput.value) return
     let file = backgroundInput.files[0]
-    console.log(file.type);
-    if (file.type.split('/')[0] === 'image') {
-        let reader = new FileReader()
-        reader.onload = () => {
-            let image = new Image()
-            image.src = reader.result
-            addBackground(image)
-        }
-        reader.readAsDataURL(file)
+    let reader = new FileReader()
+    reader.onload = () => {
+        addBackground(reader.result)
     }
-    else if (file.type.split('/')[0] === 'video') {
-        let reader = new FileReader()
-        reader.onload = () => {
-            let buffer = reader.result;
-            let videoBlob = new Blob([new Uint8Array(buffer)], { type: 'video/mp4' });
-            let url = window.URL.createObjectURL(videoBlob);
-            let video = document.createElement('video')
-            video.src = url
-            addBackground(video)
-        }
-        reader.readAsArrayBuffer(file)
-    }
+    reader.readAsDataURL(file)
     backgroundInput.value = ''
 }
 
@@ -129,19 +118,9 @@ function addBackground(background) {
     changeBackground(backgroundList.length - 1)
 }
 function changeBackground(backgroundNumber) {
-    if (backgroundList[currentBackgroundNumber] && backgroundList[currentBackgroundNumber].tagName == 'VIDEO') {
-        let video = backgroundList[currentBackgroundNumber]
-        video.pause();
-        video.currentTime = 0;
-    }
     currentBackgroundNumber = backgroundNumber
+    canvas.style.backgroundImage = `url(${backgroundList[backgroundNumber]})`
     updateBackgrounds()
-    if (backgroundList[currentBackgroundNumber].tagName == 'VIDEO') {
-        let video = backgroundList[currentBackgroundNumber]
-        video.muted = true
-        video.loop = true
-        video.play()
-    }
 }
 function deleteBackground(backgroundNumber) {
     backgroundList.splice(backgroundNumber, 1)
@@ -150,15 +129,15 @@ function deleteBackground(backgroundNumber) {
 }
 function updateBackgrounds() {
     backgroundListElement.innerHTML = ''
-    backgroundList.map((background, index) => {
-        if (background.tagName == 'IMG')
-            backgroundListElement.innerHTML += `<li><i onclick='deleteBackground(${index})' class="fa-solid fa-circle-xmark"></i><img src='${background.src}' class='bg' onclick='changeBackground(${index})'></li>`
-        else if (background.tagName == 'VIDEO')
-            backgroundListElement.innerHTML += `<li><i onclick='deleteBackground(${index})' class="fa-solid fa-circle-xmark"></i><video src='${background.src}' class='bg' onclick='changeBackground(${index})'></video></li>`
+    backgroundList.map((url, index) => {
+        backgroundListElement.innerHTML += `<li>
+            <i onclick='deleteBackground(${index})' class="fa-solid fa-circle-xmark"></i>
+            <img src='${url}' onclick='changeBackground(${index})'>
+            </li>`
     })
-    let backgrounds = document.querySelectorAll('#background-list .bg')
+    let backgrounds = document.querySelectorAll('#background-list img')
     for (let background of backgrounds) {
-        background.className = 'bg'
+        background.className = ''
     }
     if (backgrounds[currentBackgroundNumber])
         backgrounds[currentBackgroundNumber].classList.add('active')
@@ -186,16 +165,11 @@ let processor = {
             self.height = self.video.height;
             self.canvas.width = self.width;
             self.canvas.height = self.height;
-            backgroundCanvas.width = self.width;
-            backgroundCanvas.height = self.height;
             self.timerCallback();
         }, false);
     },
 
     computeFrame: function () {
-        backgroundCanvasCtx.clearRect(0, 0, this.width, this.height)
-        if (backgroundList[currentBackgroundNumber])
-            backgroundCanvasCtx.drawImage(backgroundList[currentBackgroundNumber], 0, 0, this.width, this.height);
         this.ctx.drawImage(this.video, 0, 0, this.width, this.height)
         let frame = this.ctx.getImageData(0, 0, this.width, this.height)
         let l = frame.data.length / 4;
@@ -209,6 +183,8 @@ let processor = {
             }
         }
         this.ctx.putImageData(frame, 0, 0);
+        if (recording)
+            capture.capture(canvas);
         return;
     }
 };
@@ -219,7 +195,9 @@ let imagesList = []
 let imagesListElement = document.getElementById('images-list')
 
 captureButton.onclick = () => {
-    addImage(canvas.toDataURL())
+    html2canvas(canvas).then(canvas => {
+        addImage(canvas.toDataURL())
+    });
 }
 
 function addImage(url) {
@@ -242,3 +220,36 @@ let videosContainer = document.getElementById('videos-container')
 let recordButton = document.getElementById('record')
 let videosList = []
 let videosListElement = document.getElementById('videos-list')
+
+recordButton.onclick = () => {
+    recording = !recording
+    if (recording) {
+        recordButton.innerText = 'Stop'
+        capture.start();
+    } else {
+        recordButton.innerText = 'Record video'
+        capture.stop();
+        capture.save(blob => {
+            let url = URL.createObjectURL(blob)
+            addVideo(url)
+        });
+    }
+}
+
+function addVideo(url) {
+    videosList.push(url)
+    updateVideos()
+}
+
+function updateVideos() {
+    videosListElement.innerHTML = ''
+    videosContainer.style.display = videosList.length ? 'block' : 'none'
+    videosList.map((url, index) => {
+        videosListElement.innerHTML += `<li><i onclick='deleteImage(${index})' class="fa-solid fa-circle-xmark"></i><video src='${url}' controls></video></li>`
+    })
+}
+
+function deleteImage(videoNumber) {
+    videosList.splice(videoNumber, 1)
+    updateImages()
+}

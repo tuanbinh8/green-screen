@@ -1,6 +1,6 @@
 #blur {
     display: none;
-    position: absolute;
+    position: fixed;
     left: 0;
     top: 0;
     width: 100vw;
@@ -9,15 +9,12 @@
     opacity: 0.5;
 }
 
-#canvas-container {
-    width: fit-content;
-    position: relative;
-}
-
 #canvas {
+    position: relative;
     z-index: 999;
-    position: absolute;
-    /* transform: rotateY(180deg); */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
 }
 
 /* #canvas-container .fa-rotate-left {
@@ -49,14 +46,14 @@
     position: relative;
 }
 
-#background-list .bg {
+#background-list img {
     width: 120px;
     height: 80px;
     border-radius: 12px;
     object-fit: fill;
 }
 
-#background-list .bg:hover {
+#background-list img:hover {
     outline: 2px grey solid;
 }
 
@@ -76,7 +73,7 @@
     color: red;
 }
 
-#background-list .bg.active {
+#background-list img.active {
     outline: 2px solid blue;
 }
 

@@ -15,7 +15,6 @@
 <body>
     <div id="canvas-container">
         <canvas id="canvas"></canvas>
-        <canvas id="background"></canvas>
         <!-- <i class="fa-solid fa-rotate-left" id="rotate"></i> -->
     </div>
     <div>
@@ -33,7 +32,7 @@
     </div>
     <div>
         <label for="background">Upload background:</label>
-        <input type="file" accept="image/*,video/*" id="upload-background">
+        <input type="file" accept="image/*" id="upload-background">
     </div>
     <div>
         <ul id="background-list"></ul>
@@ -48,7 +47,8 @@
     </div>
     <div id="blur"></div>
 </body>
+<script src="html2canvas.min.js"></script>
+<script src="CCapture.all.min.js"></script>
 <script src="processor.js"></script>
 <script src="camera.js"></script>
-
 </html>
